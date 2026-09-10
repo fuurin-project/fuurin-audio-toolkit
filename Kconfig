@@ -1,0 +1,75 @@
+menuconfig FUURIN_AUDIO
+	bool "Fuurin audio toolkit"
+	help
+	  Optional AEC pipeline and 16 kHz wake/speech event detector.
+	  The application owns capture, scheduling, models and network sessions.
+
+if FUURIN_AUDIO
+config FUURIN_AUDIO_DETECTOR
+	bool "Wake and VAD event detector"
+	default y
+	select CPP
+
+config FUURIN_AUDIO_WAKEWORD
+	bool "microWakeWord inference"
+	depends on FUURIN_AUDIO_DETECTOR
+	default y
+	select TENSORFLOW_LITE_MICRO
+
+config FUURIN_AUDIO_AFE
+	bool "AEC and optional frame VAD pipeline"
+
+config FUURIN_AUDIO_AEC
+	bool "Build acoustic echo cancellation"
+	depends on FUURIN_AUDIO_AFE
+	default y
+
+config FUURIN_AUDIO_CMSIS_NN
+	bool "CMSIS-NN optimized inference"
+	depends on FUURIN_AUDIO_WAKEWORD && CPU_CORTEX_M
+	default y
+	select TENSORFLOW_LITE_MICRO_CMSIS_NN_KERNELS
+
+config FUURIN_AUDIO_INTERNAL_ARENA_SIZE
+	int "Fallback tensor arena size (0 requires caller-supplied arena)"
+	depends on FUURIN_AUDIO_WAKEWORD
+	range 0 262144
+	default 32768
+endif
+
+if FUURIN_AUDIO && FUURIN_AUDIO_AEC
+choice FUURIN_AUDIO_AEC_BACKEND
+	prompt "AEC backend"
+	default FUURIN_AUDIO_AEC_BACKEND_SPEEXDSP
+
+config FUURIN_AUDIO_AEC_BACKEND_SPEEXDSP
+	bool "SpeexDSP fixed-point AEC"
+
+config FUURIN_AUDIO_AEC_BACKEND_AECM
+	bool "WebRTC AECM (cpuimage port)"
+	select CPP
+	help
+	  Portable scalar implementation for 8/16 kHz, with no NEON or MIPS
+	  sources. Does not require the full C++ standard library.
+
+endchoice
+
+config FUURIN_AUDIO_AECM_ECHO_MODE
+	int "AECM echo suppression mode"
+	depends on FUURIN_AUDIO_AEC_BACKEND_AECM
+	range 0 4
+	default 3
+	help
+	  Higher values suppress echo more aggressively. Verify preservation
+	  of near-end speech during double talk before using barge-in.
+
+config FUURIN_AUDIO_AECM_CNG
+	bool "AECM comfort noise"
+	depends on FUURIN_AUDIO_AEC_BACKEND_AECM
+	default n
+	help
+	  Generate comfort noise in suppressed regions. Disabled by default
+	  for a wake-word/recognition pipeline.
+
+
+endif

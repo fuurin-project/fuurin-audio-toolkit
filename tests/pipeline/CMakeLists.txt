@@ -1,0 +1,5 @@
+add_executable(test_pipeline test_pipeline.c)
+target_compile_definitions(zat_speexdsp PRIVATE ZAT_TESTING)
+target_link_libraries(test_pipeline PRIVATE fuurin_audio_pipeline m)
+target_compile_options(test_pipeline PRIVATE -Wall -Wextra -Werror -UNDEBUG)
+add_test(NAME pipeline COMMAND test_pipeline)

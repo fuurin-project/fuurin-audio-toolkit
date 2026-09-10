@@ -1,0 +1,4 @@
+name: fuurin-audio-toolkit
+build:
+  cmake: .
+  kconfig: Kconfig

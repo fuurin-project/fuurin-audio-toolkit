@@ -1,0 +1,21 @@
+manifest:
+  projects:
+    - name: libfvad
+      url: https://github.com/dpirch/libfvad
+      revision: 532ab666c20d3cfda38bca63abbb0f152706c369
+      path: modules/lib/libfvad
+    - name: tflite-micro
+      url: https://github.com/zephyrproject-rtos/tflite-micro
+      revision: fcc760af130f3a595b5802cdebcc77461e54f382
+      path: optional/modules/lib/tflite-micro
+    - name: speexdsp
+      url: https://github.com/xiph/speexdsp
+      revision: 1b28a0f61bc31162979e1f26f3981fc3637095c8
+      path: modules/lib/speexdsp
+    - name: webrtc-aecm
+      url: https://github.com/cpuimage/WebRTC_AECM
+      revision: 4a3647cde7509a1ab08a69c198de572b8897d162
+      path: modules/lib/webrtc-aecm
+
+  self:
+    path: fuurin-audio-toolkit
